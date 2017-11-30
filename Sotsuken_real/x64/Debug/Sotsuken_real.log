@@ -1,0 +1,3 @@
+﻿  Source.cpp
+c:\users\tsujii\documents\visual studio 2017\projects\sotsuken_real\sotsuken_real\source.cpp(109): warning C4244: '=': 'double' から 'int' への変換です。データが失われる可能性があります。
+  Sotsuken_real.vcxproj -> C:\Users\tsujii\documents\visual studio 2017\Projects\Sotsuken_real\x64\Debug\Sotsuken_real.exe
