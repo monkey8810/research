@@ -179,18 +179,33 @@ int main(void)
 			kawari[i] = divide_average1[i];
 		}
 
-		//特徴点の数確認
+		//特徴点の数確認 & 出力(csv)
 		cout << "分割した特徴点の数1" << std::endl;
 		std::cout << tokutyouten(kawari) << std::endl;
 
+		ofstream write_first("C:\\img\\result_csv\\" + to_string(a + 1) + "_1.csv");
+		if (!write_first)
+		{
+			cout << "入力エラー" << std::endl;
+			return 1;
+		}
+
 		cout << "分割した特徴点表示1" << std::endl;
-		for (i = 0; i < tokutyouten(kawari); i++)
+		for (i = 0; i <= tokutyouten(kawari); i++)
 		{
 			for (j = 0; j < 4; j++)
 			{
-				std::cout << divide_average1[i][j] << " ";
+				if (i == tokutyouten(kawari))
+				{
+					write_first << -1 << ",";
+				}
+				else {
+					std::cout << divide_average1[i][j] << " ";
+					write_first << divide_average1[i][j] << ",";
+				}
 			}
 			std::cout << std::endl;
+			write_first << endl;
 		}
 
 		//2次元配列の受け渡し用入れ替え
@@ -199,18 +214,32 @@ int main(void)
 			kawari[i] = divide_average2[i];
 		}
 
-		//特徴点の数確認
+		//特徴点の数確認 & 出力(csv)
 		cout << "分割した特徴点の数2" << std::endl;
 		std::cout << tokutyouten(kawari) << std::endl;
 
+		ofstream write_second("C:\\img\\result_csv\\" + to_string(a + 1) + "_2.csv");
+		if (!write_second)
+		{
+			cout << "入力エラー" << std::endl;
+			return 1;
+		}
+
 		cout << "分割した特徴点表示2" << std::endl;
-		for (i = 0; i < tokutyouten(kawari); i++)
+		for (i = 0; i <= tokutyouten(kawari); i++)
 		{
 			for (j = 0; j < 4; j++)
 			{
-				std::cout << divide_average2[i][j] << " ";
+				if (i == tokutyouten(kawari)) {
+					write_second << -1 << ",";
+				}
+				else {
+					std::cout << divide_average2[i][j] << " ";
+					write_second << divide_average2[i][j] << ",";
+				}
 			}
 			std::cout << std::endl;
+			write_second << endl;
 		}
 
 		//----------分離画像作成----------
@@ -244,10 +273,14 @@ int main(void)
 			cv::line(new_onlineimg2_second, cv::Point(divide_average2[i][0], divide_average2[i][1]), cv::Point(divide_average2[i + 1][0], divide_average2[i + 1][1]), cv::Scalar(0), 1, CV_AA);
 		}
 
+		// 出力(bmp)
+		cv::imwrite("C:\\img\\result_bmp\\" + to_string(a + 1) + "_1.bmp", new_onlineimg_first);
+		cv::imwrite("C:\\img\\result_bmp\\" + to_string(a + 1) + "_2.bmp", new_onlineimg2_second);
+
 		//確認
-		cv::imshow("Image" + to_string(a + MAX_IMAGESIZE), new_onlineimg);
-		cv::imshow("Image" + to_string(a + MAX_IMAGESIZE + 1), new_onlineimg_first);
-		cv::imshow("Image" + to_string(a + MAX_IMAGESIZE + 2), new_onlineimg2_second);
+		//cv::imshow("Image" + to_string(a + MAX_IMAGESIZE), new_onlineimg);
+		//cv::imshow("Image" + to_string(a + MAX_IMAGESIZE + 1), new_onlineimg_first);
+		//cv::imshow("Image" + to_string(a + MAX_IMAGESIZE + 2), new_onlineimg2_second);
 	}
 	cv::waitKey(0);
 	return 0;
