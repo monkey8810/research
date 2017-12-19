@@ -30,16 +30,78 @@ using namespace std;
 //特徴点のカウントメソッド
 int tokutyouten(int **data)
 {
-	int count = 0;
 	for (int i = 0; i < 30; i++)
 	{
 		if (data[i][0] == 0)
 		{
-			return count;
+			return i;
 		}
-		count++;
 	}
 	return 30;
+}
+
+// 細線化メソッド
+void thinningIte(cv::Mat& img, int pattern) {
+
+	cv::Mat del_marker = cv::Mat::ones(img.size(), CV_8UC1);
+	int x, y;
+
+	for (y = 1; y < img.rows - 1; ++y) {
+
+		for (x = 1; x < img.cols - 1; ++x) {
+
+			int v9, v2, v3;
+			int v8, v1, v4;
+			int v7, v6, v5;
+
+			v1 = img.data[y   * img.step + x * img.elemSize()];
+			v2 = img.data[(y - 1) * img.step + x * img.elemSize()];
+			v3 = img.data[(y - 1) * img.step + (x + 1) * img.elemSize()];
+			v4 = img.data[y   * img.step + (x + 1) * img.elemSize()];
+			v5 = img.data[(y + 1) * img.step + (x + 1) * img.elemSize()];
+			v6 = img.data[(y + 1) * img.step + x * img.elemSize()];
+			v7 = img.data[(y + 1) * img.step + (x - 1) * img.elemSize()];
+			v8 = img.data[y   * img.step + (x - 1) * img.elemSize()];
+			v9 = img.data[(y - 1) * img.step + (x - 1) * img.elemSize()];
+
+			int S = (v2 == 0 && v3 == 1) + (v3 == 0 && v4 == 1) +
+				(v4 == 0 && v5 == 1) + (v5 == 0 && v6 == 1) +
+				(v6 == 0 && v7 == 1) + (v7 == 0 && v8 == 1) +
+				(v8 == 0 && v9 == 1) + (v9 == 0 && v2 == 1);
+
+			int N = v2 + v3 + v4 + v5 + v6 + v7 + v8 + v9;
+
+			int m1 = 0, m2 = 0;
+
+			if (pattern == 0) m1 = (v2 * v4 * v6);
+			if (pattern == 1) m1 = (v2 * v4 * v8);
+
+			if (pattern == 0) m2 = (v4 * v6 * v8);
+			if (pattern == 1) m2 = (v2 * v6 * v8);
+
+			if (S == 1 && (N >= 2 && N <= 6) && m1 == 0 && m2 == 0)
+				del_marker.data[y * del_marker.step + x * del_marker.elemSize()] = 0;
+		}
+	}
+
+	img &= del_marker;
+}
+
+void thinning(const cv::Mat& src, cv::Mat& dst) {
+	dst = src.clone();
+	dst /= 255;         // 0は0 , 1以上は1に変換される
+
+	cv::Mat prev = cv::Mat::zeros(dst.size(), CV_8UC1);
+	cv::Mat diff;
+
+	do {
+		thinningIte(dst, 0);
+		thinningIte(dst, 1);
+		absdiff(dst, prev, diff);
+		dst.copyTo(prev);
+	} while (countNonZero(diff) > 0);
+
+	dst *= 255;
 }
 
 int main(void)
@@ -61,12 +123,15 @@ int main(void)
 	cv::waitKey(0);
 	*/
 
-	//オフライン読み込み
-	cv::Mat src_img_off = cv::imread("C:\\2017data\\CheckCheck\\Symbol_Pattern(01).bmp", 1);
+	//オンライン読み込み
+	cv::Mat src_img_off = cv::imread("C:\\2017data\\CheckCheck\\kakiwari(01).bmp", 1);
+	cv::Mat src_img_off2;	//細線化用
 	if (src_img_off.empty()) return -1;
 
-	//リサイズ
-	resize(src_img_off, src_img_off, cv::Size(), 720.0 / src_img_off.cols, 1280.0 / src_img_off.rows);
+	//リサイズ(Lanczos法の補間)
+	//resize(src_img_off, src_img_off, cv::Size(), 720.0 / src_img_off.cols, 1280.0 / src_img_off.rows, cv::INTER_LANCZOS4);
+	//resize(src_img_off, src_img_off, cv::Size(), 0.5, 0.5, cv::INTER_LANCZOS4);
+	//resize(src_img_off, src_img_off, cv::Size(), 0.5, 0.5);
 	std::cout << "width_off: " << src_img_off.cols << std::endl;
 	std::cout << "height_off: " << src_img_off.rows << std::endl;
 
@@ -74,12 +139,36 @@ int main(void)
 	cv::cvtColor(src_img_off, src_img_off, CV_RGB2GRAY);
 
 	//2値化
-	//cv::threshold(src_img_off, src_img_off, 0, 255, CV_THRESH_BINARY);
+	cv::threshold(src_img_off, src_img_off2, 1, 255, CV_THRESH_BINARY);
+
+	// 白黒反転
+	bitwise_not(src_img_off2, src_img_off2);
+
+	// 細線化
+	thinning(src_img_off2, src_img_off2);
+
+	// 白黒反転
+	bitwise_not(src_img_off2, src_img_off2);
+
+	for (int y = 0; y < src_img_off2.rows; y++) {
+		for (int x = 0; x < src_img_off2.cols; x++) {
+			//X座標がx, Y座標がyに位置するピクセルの値を取得
+			int intensity = src_img_off2.at<unsigned char>(y, x);
+			if (intensity == 0 && (x == 508 || y == 1070)) {
+
+				printf("(%d,%d)", x, y);
+			}
+		}
+		printf("");
+	}
 
 	//画像表示
 	//cv::namedWindow("Image", CV_WINDOW_AUTOSIZE | CV_WINDOW_FREERATIO);
 	cv::imshow("Image1", src_img_off);
+	cv::imshow("Image2", src_img_off2);
 
+
+	/*
 	//csvファイル読み込み(連番)
 	int i, j;
 
@@ -87,7 +176,7 @@ int main(void)
 	{
 		int divide_average1[15][4] = { 0 };
 		int divide_average2[15][4] = { 0 };
-		int online[30][4] = { 0 };
+		int online[30][4] = { 0 };	//x,y,フレーム数,方向角
 		int *kawari[30];
 
 		ifstream file("C:\\img\\csv\\" + to_string(a + 1) + ".csv");
@@ -278,10 +367,15 @@ int main(void)
 		cv::imwrite("C:\\img\\result_bmp\\" + to_string(a + 1) + "_2.bmp", new_onlineimg2_second);
 
 		//確認
-		//cv::imshow("Image" + to_string(a + MAX_IMAGESIZE), new_onlineimg);
-		//cv::imshow("Image" + to_string(a + MAX_IMAGESIZE + 1), new_onlineimg_first);
-		//cv::imshow("Image" + to_string(a + MAX_IMAGESIZE + 2), new_onlineimg2_second);
+		cv::imshow("Image" + to_string(a + MAX_IMAGESIZE), new_onlineimg);
+		cv::imshow("Image" + to_string(a + MAX_IMAGESIZE + 1), new_onlineimg_first);
+		cv::imshow("Image" + to_string(a + MAX_IMAGESIZE + 2), new_onlineimg2_second);
 	}
+
+
+
+
+	*/
 	cv::waitKey(0);
 	return 0;
 }
