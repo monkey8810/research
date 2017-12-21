@@ -27,22 +27,22 @@ using namespace std;
 
 //パス C:\\2017data\\CheckCheck\\CheckCheck.csv
 
-//特徴点のカウントメソッド
-int tokutyouten(int **data)
+//2次元配列の要素数カウントメソッド
+int tokutyouten(int **data, int a)
 {
-	for (int i = 0; i < 30; i++)
+	for (int i = 0; i < a; i++)
 	{
 		if (data[i][0] == 0)
 		{
 			return i;
 		}
 	}
-	return 30;
+	return a;
 }
 
 // 細線化メソッド
-void thinningIte(cv::Mat& img, int pattern) {
-
+void thinningIte(cv::Mat& img, int pattern)
+{
 	cv::Mat del_marker = cv::Mat::ones(img.size(), CV_8UC1);
 	int x, y;
 
@@ -83,7 +83,6 @@ void thinningIte(cv::Mat& img, int pattern) {
 				del_marker.data[y * del_marker.step + x * del_marker.elemSize()] = 0;
 		}
 	}
-
 	img &= del_marker;
 }
 
@@ -94,7 +93,8 @@ void thinning(const cv::Mat& src, cv::Mat& dst) {
 	cv::Mat prev = cv::Mat::zeros(dst.size(), CV_8UC1);
 	cv::Mat diff;
 
-	do {
+	do
+	{
 		thinningIte(dst, 0);
 		thinningIte(dst, 1);
 		absdiff(dst, prev, diff);
@@ -102,6 +102,82 @@ void thinning(const cv::Mat& src, cv::Mat& dst) {
 	} while (countNonZero(diff) > 0);
 
 	dst *= 255;
+}
+
+//端点検出メソッド
+int endpoint(cv::Mat& src, int **edge)
+{
+	int count = 0;
+	for (int y = 1; y < src.rows - 1; y++)
+	{
+		for (int x = 1; x < src.cols - 1; x++)
+		{
+			int v4, v3, v2;
+			int v5, v0, v1;
+			int v6, v7, v8;
+			//X座標がx, Y座標がyに位置するピクセルの値を取得
+			v0 = src.at<unsigned char>(y, x);
+			//std::cout << "v0:" << v0 << std::endl;
+			v1 = src.at<unsigned char>(y, x + 1);
+			//std::cout << "v1:" << v1 << std::endl;
+			v2 = src.at<unsigned char>(y - 1, x + 1);
+			//std::cout << "v2:" << v2 << std::endl;
+			v3 = src.at<unsigned char>(y - 1, x);
+			//std::cout << "v3:" << v3 << std::endl;
+			v4 = src.at<unsigned char>(y - 1, x - 1);
+			//std::cout << "v4:" << v4 << std::endl;
+			v5 = src.at<unsigned char>(y, x - 1);
+			//std::cout << "v5:" << v5 << std::endl;
+			v6 = src.at<unsigned char>(y + 1, x - 1);
+			//std::cout << "v6:" << v6 << std::endl;
+			v7 = src.at<unsigned char>(y + 1, x);
+			//std::cout << "v7:" << v7 << std::endl;
+			v8 = src.at<unsigned char>(y + 1, x + 1);
+			//std::cout << "v8:" << v8 << std::endl;
+
+			int sum = abs(v1 + v2 + v3 + v4 + v5 + v6 + v7 + v8);
+			//std::cout << sum << std::endl;
+
+			if (sum == 1785 && v0 == 0)
+			{
+				std::cout << (x, y) << std::endl;
+				edge[count][0] = x;	//x座標を代入
+				edge[count][1] = y;	//y座標を代入
+				count++;
+			}
+		}
+		printf("");
+	}
+	return count;
+	/*for (int y = 1; y < src.rows - 1; ++y)
+	{
+		for (int x = 1; x < src.cols - 1; ++x)
+		{
+			int v9, v2, v3;
+			int v8, v1, v4;
+			int v7, v6, v5;
+
+			v1 = src.data[y * src.step + x * src.elemSize()];
+			v2 = src.data[(y - 1) * src.step + x * src.elemSize()];
+			v3 = src.data[(y - 1) * src.step + (x + 1) * src.elemSize()];
+			v4 = src.data[y   * src.step + (x + 1) * src.elemSize()];
+			v5 = src.data[(y + 1) * src.step + (x + 1) * src.elemSize()];
+			v6 = src.data[(y + 1) * src.step + x * src.elemSize()];
+			v7 = src.data[(y + 1) * src.step + (x - 1) * src.elemSize()];
+			v8 = src.data[y   * src.step + (x - 1) * src.elemSize()];
+			v9 = src.data[(y - 1) * src.step + (x - 1) * src.elemSize()];
+
+			int sum = abs(v2 + v3 + v4 + v5 + v6 + v7 + v8 + v9);
+
+			if (sum == 7)
+			{
+				edge[count][0] = x * src.elemSize();	//x座標を代入
+				edge[count][1] = y * src.step;	//y座標を代入
+				count++;
+			}
+		}
+	}*/
+
 }
 
 int main(void)
@@ -123,7 +199,7 @@ int main(void)
 	cv::waitKey(0);
 	*/
 
-	//オンライン読み込み
+	//オフライン読み込み
 	cv::Mat src_img_off = cv::imread("C:\\2017data\\CheckCheck\\kakiwari(01).bmp", 1);
 	cv::Mat src_img_off2;	//細線化用
 	if (src_img_off.empty()) return -1;
@@ -132,8 +208,8 @@ int main(void)
 	//resize(src_img_off, src_img_off, cv::Size(), 720.0 / src_img_off.cols, 1280.0 / src_img_off.rows, cv::INTER_LANCZOS4);
 	//resize(src_img_off, src_img_off, cv::Size(), 0.5, 0.5, cv::INTER_LANCZOS4);
 	//resize(src_img_off, src_img_off, cv::Size(), 0.5, 0.5);
-	std::cout << "width_off: " << src_img_off.cols << std::endl;
-	std::cout << "height_off: " << src_img_off.rows << std::endl;
+	//std::cout << "width_off: " << src_img_off.cols << std::endl;	//1080
+	//std::cout << "height_off: " << src_img_off.rows << std::endl;	//1920
 
 	//グレー画像化
 	cv::cvtColor(src_img_off, src_img_off, CV_RGB2GRAY);
@@ -141,32 +217,66 @@ int main(void)
 	//2値化
 	cv::threshold(src_img_off, src_img_off2, 1, 255, CV_THRESH_BINARY);
 
-	// 白黒反転
+	//オフライン画像にない画素を削除
+	for (int i = 0; i < 1/*tokutyouten(kawari)*/; i++)	//本当は/**/の中身
+	{
+		int intensity = src_img_off2.at<unsigned char>(1/*online[i][1]*/, 2/*online[i][0]*/);
+		if (intensity == 0)
+		{
+			//online[i + 1][0] = online[i][0];
+			//online[i + 1][1] = online[i][1];
+			i--;
+		}
+	}
+
+	// 白黒反転(細線化用)
 	bitwise_not(src_img_off2, src_img_off2);
 
 	// 細線化
 	thinning(src_img_off2, src_img_off2);
 
-	// 白黒反転
-	bitwise_not(src_img_off2, src_img_off2);
-
-	for (int y = 0; y < src_img_off2.rows; y++) {
-		for (int x = 0; x < src_img_off2.cols; x++) {
+	//???
+	/*
+	for (int y = 0; y < src_img_off2.rows; y++)
+	{
+		for (int x = 0; x < src_img_off2.cols; x++)
+		{
 			//X座標がx, Y座標がyに位置するピクセルの値を取得
 			int intensity = src_img_off2.at<unsigned char>(y, x);
-			if (intensity == 0 && (x == 508 || y == 1070)) {
-
-				printf("(%d,%d)", x, y);
+			if (intensity == 0 && (x == 508 || y == 1070))	//0が黒,1が白
+			{
+				//printf("(%d,%d)", x, y);
 			}
 		}
 		printf("");
+	}*/
+
+	// 白黒反転(戻し)
+	bitwise_not(src_img_off2, src_img_off2);
+
+	//端点検出
+	int edge[100][2] = { 0 };	//端点保存用配列
+	int *p_edge[100];
+
+	//2次元配列の受け渡し用入れ替え
+	for (int i = 0; i < 100; i++) p_edge[i] = edge[i];
+
+	std::cout << "count:" << endpoint(src_img_off2, p_edge) << std::endl;
+
+	// 確認
+	for (int i = 0; i < tokutyouten(p_edge, sizeof(edge) / sizeof(edge[0])); i++)
+	{
+		for (int j = 0; j < 2; j++)
+		{
+			std::cout << edge[i][j] << " ";
+		}
+		std::cout << std::endl;
 	}
 
 	//画像表示
-	//cv::namedWindow("Image", CV_WINDOW_AUTOSIZE | CV_WINDOW_FREERATIO);
+	cv::namedWindow("Image", CV_WINDOW_AUTOSIZE | CV_WINDOW_FREERATIO);
 	cv::imshow("Image1", src_img_off);
 	cv::imshow("Image2", src_img_off2);
-
 
 	/*
 	//csvファイル読み込み(連番)
@@ -206,7 +316,7 @@ int main(void)
 				cout << online[i][j] << ",";
 				//サイズ合わせ
 				if (j == 0 || j == 1) {
-					online[i][j] = online[i][j] / 1.5;
+					online[i][j] = online[i][j];
 				}
 				j++;
 			}
@@ -370,12 +480,6 @@ int main(void)
 		cv::imshow("Image" + to_string(a + MAX_IMAGESIZE), new_onlineimg);
 		cv::imshow("Image" + to_string(a + MAX_IMAGESIZE + 1), new_onlineimg_first);
 		cv::imshow("Image" + to_string(a + MAX_IMAGESIZE + 2), new_onlineimg2_second);
-	}
-
-
-
-
-	*/
+	}*/
 	cv::waitKey(0);
-	return 0;
 }
