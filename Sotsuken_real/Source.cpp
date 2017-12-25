@@ -264,10 +264,10 @@ int main(void)
 
 		//グレー画像化
 		cv::cvtColor(search_img[a], search_img[a], CV_RGB2GRAY);
-		cout << "特徴点の数" << std::endl;
+
 		//2値化
 		cv::threshold(search_img[a], search_img[a], 1, 255, CV_THRESH_BINARY);
-		cout << "特徴点の数" << std::endl;
+
 		//オフライン画像にない画素を削除
 		for (i = 0; i < tokutyouten(kawari, sizeof(online) / sizeof(online[0])); i++)
 		{
@@ -282,22 +282,31 @@ int main(void)
 				{
 					online[h][0] = online[h + 1][0];
 					online[h][1] = online[h + 1][1];
+					online[h][2] = online[h + 1][2];
+					online[h][3] = online[h + 1][3];
 				}
 				i--;
 			}
 		}
-		cout << "特徴点の数" << std::endl;
+
+		//2次元配列の受け渡し用入れ替え
+		for (i = 0; i < 30; i++)
+		{
+			kawari[i] = online[i];
+		}
+
 		// 白黒反転(細線化用)
 		bitwise_not(search_img[a], search_img[a]);
-		cout << "特徴点の数" << std::endl;
+
 		// 細線化
 		thinning(search_img[a], search_img[a]);
-		cout << "特徴点の数" << std::endl;
+
 		// 白黒反転(戻し)
 		bitwise_not(search_img[a], search_img[a]);
-		cout << "特徴点の数" << std::endl;
+
 		//2次元配列の受け渡し用入れ替え
 		for (int i = 0; i < 100; i++) p_edge[i] = edge[i];
+
 		//端点検出
 		std::cout << "端点の個数:" << endpoint(search_img[a], p_edge) << std::endl;
 
@@ -536,6 +545,7 @@ int main(void)
 						}
 					}
 				}
+				break;
 			}
 			else if ((online[frame[1] - 1][0] - 40 < edge[k][0] && edge[k][0] < online[frame[1] - 1][0] + 40) && (online[frame[1] - 1][1] - 40 < edge[k][1] && edge[k][1] < online[frame[1] - 1][1] + 40))
 			{
@@ -557,20 +567,10 @@ int main(void)
 						}
 					}
 				}
-
+				break;
 			}
 			else if ((online[frame[1] + 1][0] - 40 < edge[k][0] && edge[k][0] < online[frame[1] + 1][0] + 40) && (online[frame[1] + 1][1] - 40 < edge[k][1] && edge[k][1] < online[frame[1] + 1][1] + 40))
 			{
-				for (i = 0; i < tokutyouten(kawari, sizeof(online) / sizeof(online[0])); i++)
-				{
-					if (i < frame[1] + 1)
-					{
-						for (j = 0; j < 4; j++)
-						{
-							divide_compare1[i][j] = online[i][j];
-						}
-					}
-				}
 				//frame[1] + 1で分割
 				for (i = 0; i < tokutyouten(kawari, sizeof(online) / sizeof(online[0])); i++)
 				{
@@ -589,7 +589,54 @@ int main(void)
 						}
 					}
 				}
+				break;
 			}
+			/*
+			else if ((online[frame[1] - 2][0] - 40 < edge[k][0] && edge[k][0] < online[frame[1] - 2][0] + 40) && (online[frame[1] - 2][1] - 40 < edge[k][1] && edge[k][1] < online[frame[1] - 2][1] + 40))
+			{
+				//frame[1] - 2で分割
+				for (i = 0; i < tokutyouten(kawari, sizeof(online) / sizeof(online[0])); i++)
+				{
+					if (i < frame[1] - 2)
+					{
+						for (j = 0; j < 4; j++)
+						{
+							divide_compare1[i][j] = online[i][j];
+						}
+					}
+					else
+					{
+						for (j = 0; j < 4; j++)
+						{
+							divide_compare2[i - frame[1] - 2][j] = online[i][j];
+						}
+					}
+				}
+				break;
+			}
+			else if ((online[frame[1] + 2][0] - 40 < edge[k][0] && edge[k][0] < online[frame[1] + 2][0] + 40) && (online[frame[1] + 2][1] - 40 < edge[k][1] && edge[k][1] < online[frame[1] + 2][1] + 40))
+			{
+				//frame[1] + 2で分割
+				for (i = 0; i < tokutyouten(kawari, sizeof(online) / sizeof(online[0])); i++)
+				{
+					if (i < frame[1] + 2)
+					{
+						for (j = 0; j < 4; j++)
+						{
+							divide_compare1[i][j] = online[i][j];
+						}
+					}
+					else
+					{
+						for (j = 0; j < 4; j++)
+						{
+							divide_compare2[i - frame[1] + 2][j] = online[i][j];
+						}
+					}
+				}
+				break;
+			}
+			*/
 			else//フレーム近辺にないなら
 			{
 				//frame[1]で分割
