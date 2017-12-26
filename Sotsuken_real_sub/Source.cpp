@@ -59,43 +59,6 @@ void make_histogram_image(cv::MatND& hist, cv::Mat& hist_img, int bin_num)
 	}
 }
 
-
-//類似度計算
-/*
-void createHistogram(Mat src, MatND dest)
-{
-	// ヒストグラムを生成するために必要なデータ
-	int image_num = 1;      // 入力画像の枚数
-	int channels[] = { 0 }; // cv::Matの何番目のチャネルを使うか　今回は白黒画像なので0番目のチャネル以外選択肢なし
-	cv::MatND hist;         // ここにヒストグラムが出力される
-	int dim_num = 1;        // ヒストグラムの次元数
-	int bin_num = 64;       // ヒストグラムのビンの数
-	int bin_nums[] = { bin_num };      // 今回は1次元のヒストグラムを作るので要素数は一つ
-	float range[] = { 0, 256 };        // 扱うデータの最小値、最大値　今回は輝度データなので値域は[0, 255]
-	const float *ranges[] = { range }; // 今回は1次元のヒストグラムを作るので要素数は一つ
-
-	// 白黒画像から輝度のヒストグラムデータ（＝各binごとの出現回数をカウントしたもの）を生成
-	cv::calcHist(&src, image_num, channels, cv::Mat(), hist, dim_num, bin_nums, ranges);
-	std::cout << hist << std::endl;	//確認
-
-	Mat hist;
-	int histSize = 256;
-	float range[] = { 0, 256 };
-	const float* histRange = range;
-
-	calcHist(&src, 1, 0, Mat(), hist, 1, &histSize, &histRange);
-	cout << hist << std::endl;
-
-	normalize(hist, hist, 0, 50, NORM_MINMAX);
-	dest = Mat(Size(276, 320), CV_8UC3, Scalar(255, 255, 255));
-	for (int i = 0; i < 255; i++)
-	{
-		line(dest, Point(10 + i, 300), Point(10 + i, 300 - hist.at<float>(i)), Scalar(0, 0, 0));
-	}
-	
-}
-*/
-
 int main(void)
 {
 	// 連番読み込み(オフライン画像)
@@ -269,42 +232,64 @@ int main(void)
 			divide_triangle[i - 12] = imread("C:\\img_latest\\result_bmp(average)\\" + to_string(i + 1) + "_1.bmp", 1);
 		}
 	}
-	divide_check[4] = imread("C:\\img_latest\\result_bmp(average)\\1_2.bmp", 1);
-	divide_check[5] = imread("C:\\img_latest\\result_bmp(average)\\5_2.bmp", 1);
-	divide_check[6] = imread("C:\\img_latest\\result_bmp(average)\\9_2.bmp", 1);
-	divide_check[7] = imread("C:\\img_latest\\result_bmp(average)\\13_2.bmp", 1);
-	divide_circle[4] = imread("C:\\img_latest\\result_bmp(average)\\2_2.bmp", 1);
-	divide_circle[5] = imread("C:\\img_latest\\result_bmp(average)\\6_2.bmp", 1);
-	divide_circle[6] = imread("C:\\img_latest\\result_bmp(average)\\10_2.bmp", 1);
-	divide_circle[7] = imread("C:\\img_latest\\result_bmp(average)\\14_2.bmp", 1);
-	divide_cross[4] = imread("C:\\img_latest\\result_bmp(average)\\3_2.bmp", 1);
-	divide_cross[5] = imread("C:\\img_latest\\result_bmp(average)\\7_2.bmp", 1);
-	divide_cross[6] = imread("C:\\img_latest\\result_bmp(average)\\11_2.bmp", 1);
-	divide_cross[7] = imread("C:\\img_latest\\result_bmp(average)\\15_2.bmp", 1);
-	divide_triangle[4] = imread("C:\\img_latest\\result_bmp(average)\\4_2.bmp", 1);
-	divide_triangle[5] = imread("C:\\img_latest\\result_bmp(average)\\8_2.bmp", 1);
-	divide_triangle[6] = imread("C:\\img_latest\\result_bmp(average)\\12_2.bmp", 1);
-	divide_triangle[7] = imread("C:\\img_latest\\result_bmp(average)\\16_2.bmp", 1);
+	//()の中身をaverage,frame,comoareに変更して使用
+	divide_check[4] = imread("C:\\img_latest\\result_bmp(compare)\\1_2.bmp", 1);
+	divide_check[5] = imread("C:\\img_latest\\result_bmp(compare)\\5_2.bmp", 1);
+	divide_check[6] = imread("C:\\img_latest\\result_bmp(compare)\\9_2.bmp", 1);
+	divide_check[7] = imread("C:\\img_latest\\result_bmp(compare)\\13_2.bmp", 1);
+	divide_circle[4] = imread("C:\\img_latest\\result_bmp(compare)\\2_2.bmp", 1);
+	divide_circle[5] = imread("C:\\img_latest\\result_bmp(compare)\\6_2.bmp", 1);
+	divide_circle[6] = imread("C:\\img_latest\\result_bmp(compare)\\10_2.bmp", 1);
+	divide_circle[7] = imread("C:\\img_latest\\result_bmp(compare)\\14_2.bmp", 1);
+	divide_cross[4] = imread("C:\\img_latest\\result_bmp(compare)\\3_2.bmp", 1);
+	divide_cross[5] = imread("C:\\img_latest\\result_bmp(compare)\\7_2.bmp", 1);
+	divide_cross[6] = imread("C:\\img_latest\\result_bmp(compare)\\11_2.bmp", 1);
+	divide_cross[7] = imread("C:\\img_latest\\result_bmp(compare)\\15_2.bmp", 1);
+	divide_triangle[4] = imread("C:\\img_latest\\result_bmp(compare)\\4_2.bmp", 1);
+	divide_triangle[5] = imread("C:\\img_latest\\result_bmp(compare)\\8_2.bmp", 1);
+	divide_triangle[6] = imread("C:\\img_latest\\result_bmp(compare)\\12_2.bmp", 1);
+	divide_triangle[7] = imread("C:\\img_latest\\result_bmp(compare)\\16_2.bmp", 1);
 
+	//類似度を算出
 	// ヒストグラムを生成するために必要なデータ
+	cv::MatND teach_hist[8];         // ここにヒストグラムが出力される	教師データ
+	cv::MatND evaluate_hist[32];         // ここにヒストグラムが出力される	検証データ
 	int image_num = 1;      // 入力画像の枚数
 	int channels[] = { 0 }; // cv::Matの何番目のチャネルを使うか　今回は白黒画像なので0番目のチャネル以外選択肢なし
-	cv::MatND hist[50];         // ここにヒストグラムが出力される
 	int dim_num = 1;        // ヒストグラムの次元数
 	int bin_num = 64;       // ヒストグラムのビンの数
 	int bin_nums[] = { bin_num };      // 今回は1次元のヒストグラムを作るので要素数は一つ
 	float range[] = { 0, 256 };        // 扱うデータの最小値、最大値　今回は輝度データなので値域は[0, 255]
 	const float *ranges[] = { range }; // 今回は1次元のヒストグラムを作るので要素数は一つ
 
-	// 白黒画像から輝度のヒストグラムデータ（＝各binごとの出現回数をカウントしたもの）を生成
-	cv::calcHist(&teach_on_triangle, image_num, channels, cv::Mat(), hist[0], dim_num, bin_nums, ranges);
+	//教師データのヒストグラムを求める
+	//白黒画像から輝度のヒストグラムデータ（＝各binごとの出現回数をカウントしたもの）を生成
+	cv::calcHist(&teach_off_check, image_num, channels, cv::Mat(), teach_hist[0], dim_num, bin_nums, ranges);
+	cv::calcHist(&teach_off_circle, image_num, channels, cv::Mat(), teach_hist[1], dim_num, bin_nums, ranges);
+	cv::calcHist(&teach_off_cross, image_num, channels, cv::Mat(), teach_hist[2], dim_num, bin_nums, ranges);
+	cv::calcHist(&teach_off_triangle, image_num, channels, cv::Mat(), teach_hist[3], dim_num, bin_nums, ranges);
+	cv::calcHist(&teach_on_check, image_num, channels, cv::Mat(), teach_hist[4], dim_num, bin_nums, ranges);
+	cv::calcHist(&teach_on_circle, image_num, channels, cv::Mat(), teach_hist[5], dim_num, bin_nums, ranges);
+	cv::calcHist(&teach_on_cross, image_num, channels, cv::Mat(), teach_hist[6], dim_num, bin_nums, ranges);
+	cv::calcHist(&teach_on_triangle, image_num, channels, cv::Mat(), teach_hist[7], dim_num, bin_nums, ranges);
+
+	//検証データのヒストグラムを求める
+	for (int i = 0; i < 8; i++)
+	{
+		//白黒画像から輝度のヒストグラムデータ（＝各binごとの出現回数をカウントしたもの）を生成
+		cv::calcHist(&divide_check[i], image_num, channels, cv::Mat(), evaluate_hist[i], dim_num, bin_nums, ranges);
+		cv::calcHist(&divide_circle[i], image_num, channels, cv::Mat(), evaluate_hist[i + 8], dim_num, bin_nums, ranges);
+		cv::calcHist(&divide_cross[i], image_num, channels, cv::Mat(), evaluate_hist[i + 16], dim_num, bin_nums, ranges);
+		cv::calcHist(&divide_triangle[i], image_num, channels, cv::Mat(), evaluate_hist[i + 24], dim_num, bin_nums, ranges);
+	}
 
 	// テキスト形式でヒストグラムデータを確認
-	std::cout << hist << std::endl;
+	//std::cout << hist << std::endl;
 
 	// ヒストグラムデータを表示用の画像に変換
-	// OpenCVでは関数が用意されていないので自前で用意する必要がある
 	cv::Mat hist_img;
+	/*
+	// OpenCVでは関数が用意されていないので自前で用意する必要がある
 	make_histogram_image(hist[0], hist_img, bin_num);
 	cv::imshow("histogram image1", hist_img);
 
@@ -317,11 +302,40 @@ int main(void)
 	// OpenCVでは関数が用意されていないので自前で用意する必要がある
 	make_histogram_image(hist[1], hist_img, bin_num);
 	cv::imshow("histogram image2", hist_img);
+	*/
 
 	double correl;
-
-	correl = compareHist(hist[0], hist[1], CV_COMP_CORREL);
-	std::cout << "correl:" << correl << std::endl;
+	for (int i = 0;i < 32;i++)
+	{
+		if (i < 8)
+		{
+			correl = compareHist(teach_hist[0], evaluate_hist[i], CV_COMP_CORREL);
+			std::cout << "correl(check_off):" << correl << std::endl;
+			correl = compareHist(teach_hist[4], evaluate_hist[i], CV_COMP_CORREL);
+			std::cout << "correl(check_on):" << correl << std::endl;
+		}
+		else if (i < 16)
+		{
+			correl = compareHist(teach_hist[1], evaluate_hist[i], CV_COMP_CORREL);
+			std::cout << "correl(circle_off):" << correl << std::endl;
+			correl = compareHist(teach_hist[5], evaluate_hist[i], CV_COMP_CORREL);
+			std::cout << "correl(circle_on):" << correl << std::endl;
+		}
+		else if (i < 24)
+		{
+			correl = compareHist(teach_hist[2], evaluate_hist[i], CV_COMP_CORREL);
+			std::cout << "correl(cross_off):" << correl << std::endl;
+			correl = compareHist(teach_hist[6], evaluate_hist[i], CV_COMP_CORREL);
+			std::cout << "correl(cross_on):" << correl << std::endl;
+		}
+		else
+		{
+			correl = compareHist(teach_hist[3], evaluate_hist[i], CV_COMP_CORREL);
+			std::cout << "correl(triangle_off):" << correl << std::endl;
+			correl = compareHist(teach_hist[7], evaluate_hist[i], CV_COMP_CORREL);
+			std::cout << "correl(triangle_on):" << correl << std::endl;
+		}
+	}
 
 	cv::waitKey(0);
 	getchar();
