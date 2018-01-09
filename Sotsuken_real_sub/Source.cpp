@@ -88,151 +88,186 @@ int main(void)
 	Mat teach_on_cross;
 	Mat teach_on_triangle;
 
+	//教師データ
 	for (int i = 0; i < OFF_CHECK; i++)
 	{
-		off_check[i] = imread("C:\\teachdata\\offlinepattern\\camera_finnish_glayscale\\studyset\\check\\ (" + to_string(i + 1) + ").bmp", 1);
+		off_check[i] = imread("C:\\teachdata\\offlinepattern\\camera_finnish_glayscale\\studyset\\check\\ (" + to_string(i + 1) + ").bmp", IMREAD_GRAYSCALE);
 		if (!off_check[i].data)
 		{
 			break;	//全ての画像を(連番で)読み込み終えるとループを抜ける
 		}
+		//2値化
+		threshold(off_check[i], off_check[i], 0, 255, THRESH_BINARY | THRESH_OTSU); //閾値を自動で設定
 		off_check[i].convertTo(a, CV_64FC3);
 		teach_off_check = a + teach_off_check;
 		off_check_size++;
 	}
 	teach_off_check = teach_off_check / off_check_size;
 	teach_off_check.convertTo(teach_off_check, CV_8UC3);
-	imwrite("C:\\result\\teach_off_check.bmp", teach_off_check);
+	//2値化
+	//threshold(teach_off_check, teach_off_check, 0, 255, THRESH_BINARY | THRESH_OTSU); //閾値を自動で設定
+	imwrite("C:\\result_forout\\teach_off_check.bmp", teach_off_check);
 
 	for (int i = 0; i < OFF_CIRCLE; i++)
 	{
-		off_circle[i] = imread("C:\\teachdata\\offlinepattern\\camera_finnish_glayscale\\studyset\\circle\\ (" + to_string(i + 1) + ").bmp", 1);
+		off_circle[i] = imread("C:\\teachdata\\offlinepattern\\camera_finnish_glayscale\\studyset\\circle\\ (" + to_string(i + 1) + ").bmp", IMREAD_GRAYSCALE);
 		if (!off_circle[i].data)
 		{
 			break;	//全ての画像を(連番で)読み込み終えるとループを抜ける
 		}
+		//2値化
+		threshold(off_circle[i], off_circle[i], 0, 255, THRESH_BINARY | THRESH_OTSU); //閾値を自動で設定
 		off_circle[i].convertTo(a, CV_64FC3);
 		teach_off_circle = a + teach_off_circle;
 		off_circle_size++;
 	}
 	teach_off_circle = teach_off_circle / off_circle_size;
 	teach_off_circle.convertTo(teach_off_circle, CV_8UC3);
-	imwrite("C:\\result\\teach_off_circle.bmp", teach_off_circle);
+	//2値化
+	//threshold(teach_off_circle, teach_off_circle, 0, 255, THRESH_BINARY | THRESH_OTSU); //閾値を自動で設定
+	imwrite("C:\\result_forout\\teach_off_circle.bmp", teach_off_circle);
 
 	for (int i = 0; i < OFF_CROSS; i++)
 	{
-		off_cross[i] = imread("C:\\teachdata\\offlinepattern\\camera_finnish_glayscale\\studyset\\cross\\ (" + to_string(i + 1) + ").bmp", 1);
+		off_cross[i] = imread("C:\\teachdata\\offlinepattern\\camera_finnish_glayscale\\studyset\\cross\\ (" + to_string(i + 1) + ").bmp", IMREAD_GRAYSCALE);
 		if (!off_cross[i].data)
 		{
 			break;	//全ての画像を(連番で)読み込み終えるとループを抜ける
 		}
+		//2値化
+		threshold(off_cross[i], off_cross[i], 0, 255, THRESH_BINARY | THRESH_OTSU); //閾値を自動で設定
 		off_cross[i].convertTo(a, CV_64FC3);
 		teach_off_cross = a + teach_off_cross;
 		off_cross_size++;
 	}
 	teach_off_cross = teach_off_cross / off_cross_size;
 	teach_off_cross.convertTo(teach_off_cross, CV_8UC3);
-	imwrite("C:\\result\\teach_off_cross.bmp", teach_off_cross);
+	//2値化
+	//threshold(teach_off_cross, teach_off_cross, 0, 255, THRESH_BINARY | THRESH_OTSU); //閾値を自動で設定
+	imwrite("C:\\result_forout\\teach_off_cross.bmp", teach_off_cross);
 
 	for (int i = 0; i < OFF_TRIANGLE; i++)
 	{
-		off_triangle[i] = imread("C:\\teachdata\\offlinepattern\\camera_finnish_glayscale\\studyset\\triangle\\ (" + to_string(i + 1) + ").bmp", 1);
+		off_triangle[i] = imread("C:\\teachdata\\offlinepattern\\camera_finnish_glayscale\\studyset\\triangle\\ (" + to_string(i + 1) + ").bmp", IMREAD_GRAYSCALE);
 		if (!off_triangle[i].data)
 		{
 			break;	//全ての画像を(連番で)読み込み終えるとループを抜ける
 		}
+		//2値化
+		threshold(off_triangle[i], off_triangle[i], 0, 255, THRESH_BINARY | THRESH_OTSU); //閾値を自動で設定
 		off_triangle[i].convertTo(a, CV_64FC3);
 		teach_off_triangle = a + teach_off_triangle;
 		off_triangle_size++;
 	}
 	teach_off_triangle = teach_off_triangle / off_triangle_size;
 	teach_off_triangle.convertTo(teach_off_triangle, CV_8UC3);
-	imwrite("C:\\result\\teach_off_triangle.bmp", teach_off_triangle);
+	//2値化
+	//threshold(teach_off_triangle, teach_off_triangle, 0, 255, THRESH_BINARY | THRESH_OTSU); //閾値を自動で設定
+	imwrite("C:\\result_forout\\teach_off_triangle.bmp", teach_off_triangle);
 
 	for (int i = 0; i < ON_CHECK; i++)
 	{
-		on_check[i] = imread("C:\\teachdata\\onlinepattern\\StudyPat\\check\\ (" + to_string(i + 1) + ").bmp", 1);
+		on_check[i] = imread("C:\\teachdata\\onlinepattern\\StudyPat\\check\\ (" + to_string(i + 1) + ").bmp", IMREAD_GRAYSCALE);
 		if (!on_check[i].data)
 		{
 			break;	//全ての画像を(連番で)読み込み終えるとループを抜ける
 		}
+		//2値化
+		threshold(on_check[i], on_check[i], 0, 255, THRESH_BINARY | THRESH_OTSU); //閾値を自動で設定
 		on_check[i].convertTo(a, CV_64FC3);
 		teach_on_check = a + teach_on_check;
 		on_check_size++;
 	}
 	teach_on_check = teach_on_check / on_check_size;
 	teach_on_check.convertTo(teach_on_check, CV_8UC3);
-	imwrite("C:\\result\\teach_on_check.bmp", teach_on_check);
+	//2値化
+	//threshold(teach_on_check, teach_on_check, 0, 255, THRESH_BINARY | THRESH_OTSU); //閾値を自動で設定
+	imwrite("C:\\result_forout\\teach_on_check.bmp", teach_on_check);
 
 	for (int i = 0; i < ON_CIRCLE; i++)
 	{
-		on_circle[i] = imread("C:\\teachdata\\onlinepattern\\StudyPat\\circle\\ (" + to_string(i + 1) + ").bmp", 1);
+		on_circle[i] = imread("C:\\teachdata\\onlinepattern\\StudyPat\\circle\\ (" + to_string(i + 1) + ").bmp", IMREAD_GRAYSCALE);
 		if (!on_circle[i].data)
 		{
 			break;	//全ての画像を(連番で)読み込み終えるとループを抜ける
 		}
+		//2値化
+		threshold(on_circle[i], on_circle[i], 0, 255, THRESH_BINARY | THRESH_OTSU); //閾値を自動で設定
 		on_circle[i].convertTo(a, CV_64FC3);
 		teach_on_circle = a + teach_on_circle;
 		on_circle_size++;
 	}
 	teach_on_circle = teach_on_circle / on_circle_size;
 	teach_on_circle.convertTo(teach_on_circle, CV_8UC3);
-	imwrite("C:\\result\\teach_on_circle.bmp", teach_on_circle);
+	//2値化
+	//threshold(teach_on_circle, teach_on_circle, 0, 255, THRESH_BINARY | THRESH_OTSU); //閾値を自動で設定
+	imwrite("C:\\result_forout\\teach_on_circle.bmp", teach_on_circle);
 
 	for (int i = 0; i < ON_CROSS; i++)
 	{
-		on_cross[i] = imread("C:\\teachdata\\onlinepattern\\StudyPat\\cross\\ (" + to_string(i + 1) + ").bmp", 1);
+		on_cross[i] = imread("C:\\teachdata\\onlinepattern\\StudyPat\\cross\\ (" + to_string(i + 1) + ").bmp", IMREAD_GRAYSCALE);
 		if (!on_cross[i].data)
 		{
 			break;	//全ての画像を(連番で)読み込み終えるとループを抜ける
 		}
+		//2値化
+		threshold(on_cross[i], on_cross[i], 0, 255, THRESH_BINARY | THRESH_OTSU); //閾値を自動で設定
 		on_cross[i].convertTo(a, CV_64FC3);
 		teach_on_cross = a + teach_on_cross;
 		on_cross_size++;
 	}
 	teach_on_cross = teach_on_cross / on_cross_size;
 	teach_on_cross.convertTo(teach_on_cross, CV_8UC3);
-	imwrite("C:\\result\\teach_on_cross.bmp", teach_on_cross);
+	//2値化
+	//threshold(teach_on_cross, teach_on_cross, 0, 255, THRESH_BINARY | THRESH_OTSU); //閾値を自動で設定
+	imwrite("C:\\result_forout\\teach_on_cross.bmp", teach_on_cross);
 
 	for (int i = 0; i < ON_TRIANGLE; i++)
 	{
-		on_triangle[i] = imread("C:\\teachdata\\onlinepattern\\StudyPat\\triangle\\ (" + to_string(i + 1) + ").bmp", 1);
+		on_triangle[i] = imread("C:\\teachdata\\onlinepattern\\StudyPat\\triangle\\ (" + to_string(i + 1) + ").bmp", IMREAD_GRAYSCALE);
 		if (!on_triangle[i].data)
 		{
 			break;	//全ての画像を(連番で)読み込み終えるとループを抜ける
 		}
+		//2値化
+		threshold(on_triangle[i], on_triangle[i], 0, 255, THRESH_BINARY | THRESH_OTSU); //閾値を自動で設定
 		on_triangle[i].convertTo(a, CV_64FC3);
 		teach_on_triangle = a + teach_on_triangle;
 		on_triangle_size++;
 	}
 	teach_on_triangle = teach_on_triangle / on_triangle_size;
 	teach_on_triangle.convertTo(teach_on_triangle, CV_8UC3);
-	imwrite("C:\\result\\teach_on_triangle.bmp", teach_on_triangle);
+	//2値化
+	//threshold(teach_on_triangle, teach_on_triangle, 0, 255, THRESH_BINARY | THRESH_OTSU); //閾値を自動で設定
+	imwrite("C:\\result_forout\\teach_on_triangle.bmp", teach_on_triangle);
 
+	//テストデータ
 	Mat divide_check[8];
 	Mat divide_circle[8];
 	Mat divide_cross[8];
 	Mat divide_triangle[8];
 
+	//()の中身をaverage,average,comoareに変更して使用
 	for (int i = 0; i < 16; i++)
 	{
 		if (i < 4)
 		{
-			divide_check[i] = imread("C:\\img_latest\\result_bmp(average)\\" + to_string(i + 1) + "_1.bmp", 1);
+			divide_check[i] = imread("C:\\img_latest\\result_bmp(compare)\\" + to_string(i + 1) + "_1.bmp", 1);
 		}
 		else if (i < 8)
 		{
-			divide_circle[i - 4] = imread("C:\\img_latest\\result_bmp(average)\\" + to_string(i + 1) + "_1.bmp", 1);
+			divide_circle[i - 4] = imread("C:\\img_latest\\result_bmp(compare)\\" + to_string(i + 1) + "_1.bmp", 1);
 		}
 		else if (i < 12)
 		{
-			divide_cross[i - 8] = imread("C:\\img_latest\\result_bmp(average)\\" + to_string(i + 1) + "_1.bmp", 1);
+			divide_cross[i - 8] = imread("C:\\img_latest\\result_bmp(compare)\\" + to_string(i + 1) + "_1.bmp", 1);
 		}
 		else
 		{
-			divide_triangle[i - 12] = imread("C:\\img_latest\\result_bmp(average)\\" + to_string(i + 1) + "_1.bmp", 1);
+			divide_triangle[i - 12] = imread("C:\\img_latest\\result_bmp(compare)\\" + to_string(i + 1) + "_1.bmp", 1);
 		}
 	}
-	//()の中身をaverage,frame,comoareに変更して使用
+	
 	divide_check[4] = imread("C:\\img_latest\\result_bmp(compare)\\1_2.bmp", 1);
 	divide_check[5] = imread("C:\\img_latest\\result_bmp(compare)\\5_2.bmp", 1);
 	divide_check[6] = imread("C:\\img_latest\\result_bmp(compare)\\9_2.bmp", 1);
@@ -249,6 +284,15 @@ int main(void)
 	divide_triangle[5] = imread("C:\\img_latest\\result_bmp(compare)\\8_2.bmp", 1);
 	divide_triangle[6] = imread("C:\\img_latest\\result_bmp(compare)\\12_2.bmp", 1);
 	divide_triangle[7] = imread("C:\\img_latest\\result_bmp(compare)\\16_2.bmp", 1);
+
+	//膨張演算
+	for (int i = 0; i < 8; i++)
+	{
+		erode(divide_check[i], divide_check[i], Mat(), Point(-1, -1), 10);
+		erode(divide_circle[i], divide_circle[i], Mat(), Point(-1, -1), 10);
+		erode(divide_cross[i], divide_cross[i], Mat(), Point(-1, -1), 10);
+		erode(divide_triangle[i], divide_triangle[i], Mat(), Point(-1, -1), 10);
+	}
 
 	//類似度を算出
 	// ヒストグラムを生成するために必要なデータ
